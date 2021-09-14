@@ -1,0 +1,116 @@
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="icon" href="{{ if (isset .Site.Params "favicon") }}{{ .Site.Params.favicon }}{{ else }}/favicon.ico{{ end }}">
+
+  <title>
+    {{ block "title" . }} {{- .Title }} - {{ .Site.Title -}} {{ end }}
+  </title>
+  <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{if .IsPage}}{{ .Summary }}{{ else }}{{ with .Site.Params.description }}{{ . }}{{ end }}{{ end }}{{ end -}}" />
+  {{- if .Keywords }}
+  <meta name="keywords" content="{{ delimit .Keywords "," }}" />
+  {{ end -}}
+  {{- if .Params.Author }}
+  <meta name="author" content="{{ .Params.Author}}" />
+  {{ end -}}
+  
+  {{ hugo.Generator }}
+
+  {{- $styles := resources.Get "css/styles.css" | postCSS (dict "config" "./assets/css/postcss.config.js") -}}
+  {{- if .Site.IsServer }}
+  <link rel="stylesheet" href="{{ $styles.RelPermalink }}" />
+  {{ else }}
+  {{- $styles := $styles| minify | fingerprint | resources.PostProcess -}}
+  <link
+    rel="stylesheet"
+    href="{{ $styles.Permalink }}"
+    integrity="{{ $styles.Data.Integrity }}"
+  />
+  {{ end -}}
+
+  <link rel="stylesheet" href="https://s.pageclip.co/v1/pageclip.css" media="screen">
+  <style>
+    .form-control {
+      width: 100%;
+      height: 42px;
+      padding: 6px 12px;
+      background-color: #fff;
+      background-image: none;
+      border: 1px solid #ccc;
+      border-radius: 0;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+      transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+  
+    .button_cta {
+      color: #fff;
+      background-color: #f83877;
+      border-width: 0;
+    }
+  
+    .example-title {
+      margin-top: 15px;
+      margin-bottom: 15px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #93b6c5;
+    }
+  
+    .example-form .form-control {
+      margin-bottom: 15px;
+    }
+  
+    .button {
+      display: inline-block;
+      height: 36px;
+      line-height: 36px;
+      margin-bottom: 0;
+      padding: 0 15px;
+      font-weight: 700;
+      font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif;
+      font-size: 12px;
+      text-align: center;
+      vertical-align: middle;
+      -ms-touch-action: manipulation;
+      touch-action: manipulation;
+      text-transform: uppercase;
+      cursor: pointer;
+      background-image: none;
+      border: none;
+      white-space: nowrap;
+      border-radius: 0;
+      transition: all .2s;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+  </style>
+  <!-- Katex support -->
+  {{ if .Params.math }}
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.css"
+      integrity="sha384-D+9gmBxUQogRLqvARvNLmA9hS2x//eK1FhVb9PiU86gmcrBrJAQT8okdJ4LMp2uv"
+      crossorigin="anonymous"
+    >
+
+    <script defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.js"
+      integrity="sha384-483A6DwYfKeDa0Q52fJmxFXkcPCFfnXMoXblOkJ4JcA8zATN6Tm78UNL72AKk+0O"
+      crossorigin="anonymous"
+    ></script>
+
+    <script defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/contrib/auto-render.min.js"
+      integrity="sha384-yACMu8JWxKzSp/C1YV86pzGiQ/l1YUfE8oPuahJQxzehAjEt2GiQuy/BIvl9KyeF"
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+  {{ end }}
+
+  {{ template "_internal/opengraph.html" . }}
+  {{ template "_internal/twitter_cards.html" . }}
+  {{ template "_internal/schema.html" . }}
+</head>
